@@ -1,0 +1,13 @@
+# 第三方素材：用 fetch_assets.py 下载，不入库
+assets/
+
+# 构建中间产物（dist/ 里的成品入库）
+build/
+__pycache__/
+*.pyc
+
+# 测试沙盒
+test/
+
+# dist 里重复的打包
+dist/*.zip

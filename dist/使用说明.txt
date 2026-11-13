@@ -1,0 +1,66 @@
+RDR2 修改器安装器 v1.0
+=================================
+
+两个文件，功能完全一样，按你手上的系统选一个：
+
+  RDR2修改器.exe    Windows 用（双击就能开菜单）
+  rdr2mod-deck      SteamOS / Linux 用（Steam Deck 选这个）
+
+里面打包了什么
+---------------------------------
+  ScriptHookRDR2.dll    脚本钩子，Alexander Blade 官方版 1.0.1491.17
+  dinput8.dll           ASI 加载器，官方分发里带的那个
+  Rampage.asi           Rampage Trainer 1.6.8（适配游戏 1.0.1491.50）
+  RampageFiles/         它的配置、模型列表、贴图、声音插件
+  NativeTrainer.asi     官方样例修改器，默认不装（--nativetrainer 才装）
+
+安装器会干的活
+---------------------------------
+  1. 扫所有 Steam 库（内置盘、SD 卡、外接盘），从 libraryfolders.vdf 里找游戏
+  2. 检查 RDR2.exe 在不在、目录能不能写
+  3. 备份：现有存档（Proton 前缀里的 Rockstar Games/RDR2）+ 即将被覆盖的原文件
+     备份放在  ~/RDR2-mod-backup/<时间戳>/   （Windows 是 %USERPROFILE%\RDR2-mod-backup）
+  4. 释放上面那些文件到游戏目录
+  5. 改 Steam 启动项：给 appid 1174180 写入
+        WINEDLLOVERRIDES="dinput8,ScriptHookRDR2=n,b" %command%
+     改之前会把 localconfig.vdf 一起备份，CRLF 换行原样保留
+  6. 逐字节校验装进去的文件
+  7. 全程日志写到  ~/RDR2-mod-install.log
+
+Steam Deck 上怎么用
+---------------------------------
+  1. 切到桌面模式（Desktop Mode）
+  2. 把 rdr2mod-deck 拷到 /home/deck 下，别放 exFAT 的 SD 卡里直接跑
+  3. 打开 Konsole：
+        chmod +x ~/rdr2mod-deck
+        ~/rdr2mod-deck
+  4. 菜单里按 1，回车。看到 "装好了" 就行
+  5. 回游戏模式，启动 RDR2。进游戏后按 F5 开菜单
+     （手柄：进 Rampage 设置里把 Controller Support 打开，默认 RB+A）
+
+  如果它说找不到游戏：菜单选 2，手动把游戏目录粘进去，一般是
+     /home/deck/.local/share/Steam/steamapps/common/Red Dead Redemption 2
+     或者 SD 卡：/run/media/deck/<一串编号>/steamapps/common/Red Dead Redemption 2
+
+  Steam 必须先退出再改启动项，否则 Steam 退出时会把旧配置写回去。
+  改完如果发现启动项没生效：游戏属性 -> 启动选项，把上面那行粘进去。
+
+常用命令
+---------------------------------
+  ./rdr2mod-deck --install        直接装（不显示菜单）
+  ./rdr2mod-deck --install --root "/path/to/Red Dead Redemption 2"
+  ./rdr2mod-deck --status         看装没装、启动项现在是什么
+  ./rdr2mod-deck --toggle         临时关掉/打开修改器（改 dinput8.dll 名字）
+  ./rdr2mod-deck --uninstall      卸掉并把启动项还原
+  ./rdr2mod-deck --diagnose       出问题时先跑这个，把输出发我
+  ./rdr2mod-deck --no-vdf         只放文件，不动 Steam 配置
+  ./rdr2mod-deck --nativetrainer  额外装官方 NativeTrainer
+  ./rdr2mod-deck --home DIR --steam-root DIR    给测试用
+
+规矩
+---------------------------------
+  * 只玩故事模式。挂着 ScriptHook 进 RDR Online 会被直接踢，也可能出事。
+  * Rampage 的功能：无敌、无限弹药、给武器、刷马刷车刷人、传送、改天气时间、
+    改金钱、改荣誉、自由视角、模型替换等，菜单里都能翻到。
+  * 游戏更新到新版本后 ScriptHook 可能失效（报 can't find native），
+    到时候等 ScriptHookRDR2 更新，重新跑一次安装器覆盖就行。
